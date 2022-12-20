@@ -1,16 +1,22 @@
-import { User } from "../../model/User";
-import { IUsersRepository } from "../../repositories/IUsersRepository";
+import { Request, Response } from "express";
 
-interface IRequest {
-  user_id: string;
-}
+import { ListAllUsersUseCase } from "./ListAllUsersUseCase";
 
-class ListAllUsersUseCase {
-  constructor(private usersRepository: IUsersRepository) {}
+class ListAllUsersController {
+  constructor(private listAllUsersUseCase: ListAllUsersUseCase) {}
 
-  execute({ user_id }: IRequest): User[] {
-    // Complete aqui
+  handle(request: Request, response: Response): Response {
+    const { user_id } = request.headers;
+
+    let users;
+
+    try {
+      users = this.listAllUsersUseCase.execute({ user_id: String(user_id) });
+      return response.status(202).json(users);
+    } catch (error) {
+      return response.status(400).json({ error: error.message });
+    }
   }
 }
 
-export { ListAllUsersUseCase };
+export { ListAllUsersController };
